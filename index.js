@@ -3,6 +3,9 @@ const connection = require("./database/connection");
 const express = require("express");
 const cors = require("cors");
 
+//Libreria para acceder a ficheros estaticos
+const path = require("path");
+
 //Mensaje de bienvenida
 console.log("API NODE was started");
 
@@ -22,13 +25,21 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 //Cargar conf rutas
+
 const UserRouter = require("./routes/user");
 const PublicationRoutes = require("./routes/publication");
 const FollowRoutes = require("./routes/follow");
 
+app.use("/", express.static('dist', {redirect: false}));
+
 app.use("/api/user", UserRouter);
 app.use("/api/publication", PublicationRoutes);
 app.use("/api/follow", FollowRoutes);
+
+//Cargar el index del front
+app.get("*", (req, res, next) =>{
+    return res.sendFile(path.resolve("dist/index.html"));
+});
 
 //Ruta de prueba
 app.get("/ruta-prueba", (req, res) =>{
